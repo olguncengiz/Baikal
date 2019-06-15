@@ -5,7 +5,7 @@
 *  (c) 2013 Jérôme Schneider <mail@jeromeschneider.fr>
 *  All rights reserved
 *
-*  http://sabre.io/baikal
+*  http://baikal-server.com
 *
 *  This script is part of the Baïkal Server project. The Baïkal
 *  Server project is free software; you can redistribute it
@@ -26,11 +26,6 @@
 
 ini_set("session.cookie_httponly", 1);
 ini_set("log_errors", 1);
-$maxtime = ini_get('max_execution_time');
-if ($maxtime != 0 && $maxtime < 3600) {
-    ini_set('max_execution_time', 3600); // 1 hour
-}
-ini_set('ignore_user_abort', true);
 error_reporting(E_ALL);
 
 define("BAIKAL_CONTEXT", true);
@@ -75,11 +70,7 @@ if (!defined("BAIKAL_CONFIGURED_VERSION")) {
 } else {
     if (BAIKAL_CONFIGURED_VERSION !== BAIKAL_VERSION) {
         # we have to upgrade Baïkal
-        if (\Flake\Util\Tools::GET("upgradeConfirmed")) {
-            $oPage->zone("Payload")->addBlock(new \BaikalAdmin\Controller\Install\VersionUpgrade());
-        } else {
-            $oPage->zone("Payload")->addBlock(new \BaikalAdmin\Controller\Install\UpgradeConfirmation());
-        }
+        $oPage->zone("Payload")->addBlock(new \BaikalAdmin\Controller\Install\VersionUpgrade());
     } elseif (!file_exists(PROJECT_PATH_SPECIFIC . '/INSTALL_DISABLED')) {
         $oPage->zone("Payload")->addBlock(new \BaikalAdmin\Controller\Install\Database());
     } else {

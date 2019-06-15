@@ -5,7 +5,7 @@
 #  (c) 2013 Jérôme Schneider <mail@jeromeschneider.fr>
 #  All rights reserved
 #
-#  http://sabre.io/baikal
+#  http://baikal-server.com
 #
 #  This script is part of the Baïkal Server project. The Baïkal
 #  Server project is free software; you can redistribute it
@@ -206,7 +206,7 @@ abstract class Config extends \Flake\Core\Model\NoDb {
         $sLines = implode("\n", $aLines);
         $sSandboxedCode = str_replace(["<?php", "<?", "?>"], "", $sLines);
         $sRand = (string)rand();
-        $sCode = "if(0) {" . $sSandboxedCode . "\n}; echo '" . $sRand . "';";
+        $sCode = "if(0) {" . $sSandboxedCode . "}; echo '" . $sRand . "';";
         ob_start();
         eval($sCode);
         $sRes = ob_get_contents();

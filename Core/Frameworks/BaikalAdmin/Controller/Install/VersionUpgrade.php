@@ -5,7 +5,7 @@
 #  (c) 2013 Jérôme Schneider <mail@jeromeschneider.fr>
 #  All rights reserved
 #
-#  http://sabre.io/baikal
+#  http://baikal-server.com
 #
 #  This script is part of the Baïkal Server project. The Baïkal
 #  Server project is free software; you can redistribute it
@@ -86,8 +86,6 @@ HTML;
         if (version_compare($sVersionFrom, '0.2.3', '<=')) {
             throw new \Exception('This version of Baikal does not support upgrading from version 0.2.3 and older. Please request help on Github if this is a problem.');
         }
-
-        $this->assertConfigWritable();
 
         $pdo = $GLOBALS['DB']->getPDO();
         if (version_compare($sVersionFrom, '0.3.0', '<')) {
@@ -379,141 +377,6 @@ CREATE TABLE addressbooks (
             }
 
         }
-        if (version_compare($sVersionFrom, '0.5.1', '<')) {
-            if (!defined("PROJECT_DB_MYSQL") || PROJECT_DB_MYSQL === false) {
-                $pdo->exec(<<<SQL
-CREATE TABLE calendarinstances (
-    id integer primary key asc NOT NULL,
-    calendarid integer,
-    principaluri text,
-    access integer COMMENT '1 = owner, 2 = read, 3 = readwrite' NOT NULL DEFAULT '1',
-    displayname text,
-    uri text NOT NULL,
-    description text,
-    calendarorder integer,
-    calendarcolor text,
-    timezone text,
-    transparent bool,
-    share_href text,
-    share_displayname text,
-    share_invitestatus integer DEFAULT '2',
-    UNIQUE (principaluri, uri),
-    UNIQUE (calendarid, principaluri),
-    UNIQUE (calendarid, share_href)
-);
-SQL
-        );
-                $this->aSuccess[] = 'Created calendarinstances table';
-                $pdo->exec('
-INSERT INTO calendarinstances
-    (
-        calendarid,
-        principaluri,
-        access,
-        displayname,
-        uri,
-        description,
-        calendarorder,
-        calendarcolor,
-        transparent
-    )
-SELECT
-    id,
-    principaluri,
-    1,
-    displayname,
-    uri,
-    description,
-    calendarorder,
-    calendarcolor,
-    transparent
-FROM calendars
-');
-                $this->aSuccess[] = 'Migrated calendarinstances table';
-                $calendarBackup = 'calendars_3_1';
-                $pdo->exec('ALTER TABLE calendars RENAME TO ' . $calendarBackup);
-                $this->aSuccess[] = 'Did calendars backup';
-
-                $pdo->exec(<<<SQL
-CREATE TABLE calendars (
-    id integer primary key asc NOT NULL,
-    synctoken integer DEFAULT 1 NOT NULL,
-    components text NOT NULL
-);
-SQL
-        );
-                $this->aSuccess[] = 'Created new calendars table';
-            } else { // mysql
-                $pdo->exec(<<<SQL
-CREATE TABLE calendarinstances (
-    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    calendarid INTEGER UNSIGNED NOT NULL,
-    principaluri VARBINARY(100),
-    access TINYINT(1) NOT NULL DEFAULT '1' COMMENT '1 = owner, 2 = read, 3 = readwrite',
-    displayname VARCHAR(100),
-    uri VARBINARY(200),
-    description TEXT,
-    calendarorder INT(11) UNSIGNED NOT NULL DEFAULT '0',
-    calendarcolor VARBINARY(10),
-    timezone TEXT,
-    transparent TINYINT(1) NOT NULL DEFAULT '0',
-    share_href VARBINARY(100),
-    share_displayname VARCHAR(100),
-    share_invitestatus TINYINT(1) NOT NULL DEFAULT '2' COMMENT '1 = noresponse, 2 = accepted, 3 = declined, 4 = invalid',
-    UNIQUE(principaluri, uri),
-    UNIQUE(calendarid, principaluri),
-    UNIQUE(calendarid, share_href)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-SQL
-        );
-                $this->aSuccess[] = 'Created calendarinstances table';
-                $pdo->exec('
-INSERT INTO calendarinstances
-    (
-        calendarid,
-        principaluri,
-        access,
-        displayname,
-        uri,
-        description,
-        calendarorder,
-        calendarcolor,
-        transparent
-    )
-SELECT
-    id,
-    principaluri,
-    1,
-    displayname,
-    uri,
-    description,
-    calendarorder,
-    calendarcolor,
-    transparent
-FROM calendars
-');
-                $this->aSuccess[] = 'Migrated calendarinstances table';
-                $calendarBackup = 'calendars_3_1';
-                $pdo->exec('RENAME TABLE calendars TO ' . $calendarBackup);
-                $this->aSuccess[] = 'Did calendars backup';
-
-                $pdo->exec(<<<SQL
-CREATE TABLE calendars (
-    id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    synctoken INTEGER UNSIGNED NOT NULL DEFAULT '1',
-    components VARBINARY(21)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-SQL
-);
-                $this->aSuccess[] = 'Created new calendars table';
-            }
-
-            $pdo->exec(<<<SQL
-INSERT INTO calendars (id, synctoken, components) SELECT id, COALESCE(synctoken,1) as synctoken, COALESCE(components,"VEVENT,VTODO,VJOURNAL") as components FROM $calendarBackup
-SQL
-    );
-            $this->aSuccess[] = 'Migrated calendars table';
-        }
 
 
         $this->updateConfiguredVersion($sVersionTo);
@@ -530,17 +393,5 @@ SQL
         $oConfig = new \Baikal\Model\Config\System(PROJECT_PATH_SPECIFIC . "config.system.php");
         $oConfig->set("BAIKAL_CONFIGURED_VERSION", $sVersionTo);
         $oConfig->persist();
-    }
-
-    protected function assertConfigWritable() {
-        # Parsing the config also makes sure that it is not malformed
-        $oConfig = new \Baikal\Model\Config\Standard(PROJECT_PATH_SPECIFIC . "config.php");
-        if ($oConfig->writable() === false) {
-            throw new \Exception(PROJECT_PATH_SPECIFIC . "config.php is not writable");
-        }
-        $oConfig = new \Baikal\Model\Config\System(PROJECT_PATH_SPECIFIC . "config.system.php");
-        if ($oConfig->writable() === false) {
-            throw new \Exception(PROJECT_PATH_SPECIFIC . "config.system.php is not writable");
-        }
     }
 }

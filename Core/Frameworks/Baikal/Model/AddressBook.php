@@ -5,7 +5,7 @@
 #  (c) 2013 Jérôme Schneider <mail@jeromeschneider.fr>
 #  All rights reserved
 #
-#  http://sabre.io/baikal
+#  http://baikal-server.com
 #
 #  This script is part of the Baïkal Server project. The Baïkal
 #  Server project is free software; you can redistribute it
@@ -89,8 +89,9 @@ class AddressBook extends \Flake\Core\Model\Db {
         ]));
 
         $oMorpho->add(new \Formal\Element\Text([
-            "prop"  => "description",
-            "label" => "Description"
+            "prop"       => "description",
+            "label"      => "Description",
+            "validation" => "required"
         ]));
 
         if ($this->floating()) {

@@ -5,7 +5,7 @@
 #  (c) 2013 Jérôme Schneider <mail@jeromeschneider.fr>
 #  All rights reserved
 #
-#  http://sabre.io/baikal
+#  http://baikal-server.com
 #
 #  This script is part of the Baïkal Server project. The Baïkal
 #  Server project is free software; you can redistribute it
@@ -169,8 +169,6 @@ class Server {
             $this->server->addPlugin(new \Sabre\CalDAV\Plugin());
             $this->server->addPlugin(new \Sabre\CalDAV\ICSExportPlugin());
             $this->server->addPlugin(new \Sabre\CalDAV\Schedule\Plugin());
-            $this->server->addPlugin(new \Sabre\DAV\Sharing\Plugin());
-            $this->server->addPlugin(new \Sabre\CalDAV\SharingPlugin());
         }
         if ($this->enableCardDAV) {
             $this->server->addPlugin(new \Sabre\CardDAV\Plugin());

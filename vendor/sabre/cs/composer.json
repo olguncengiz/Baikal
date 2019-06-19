@@ -1,0 +1,52 @@
+{
+    "name": "sabre/cs",
+    "description": "sabre/cs provides coding standards for all sabre packages.",
+    "keywords": [
+        "sabre",
+        "cs",
+        "coding standards"
+    ],
+    "homepage": "http://sabre.io",
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": ">=5.4.7",
+        "friendsofphp/php-cs-fixer" : "~1.11.6"
+    },
+    "authors" : [
+        {
+            "name" : "Ivan Enderlin",
+            "email" : "ivan.enderlin@hoa-project.net",
+            "homepage" : "http://mnt.io/",
+            "role" : "Developer"
+        },
+        {
+            "name" : "Dominik Tobschall",
+            "email" : "dominik@fruux.com",
+            "homepage" : "http://tobschall.de/",
+            "role" : "Developer"
+        },
+        {
+            "name" : "Evert Pot",
+            "email" : "me@evertpot.com",
+            "homepage" : "http://evertpot.com/",
+            "role" : "Developer"
+        }
+    ],
+    "support": {
+        "forum": "https://groups.google.com/group/sabredav-discuss",
+        "source": "https://github.com/fruux/sabre-cs"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Sabre\\CS\\" : "lib/"
+        }
+    },
+    "require-dev": {
+    },
+    "config" : {
+        "bin-dir" : "bin/"
+    },
+    "bin" : [
+        "bin/sabre-cs-fixer"
+    ]
+}

@@ -8,7 +8,14 @@ Specific/INSTALL_DISABLED
 
 # Composer stuff
 composer.lock
-vendor
+vendor/bin
+vendor/composer
+vendor/friendsofphp
+vendor/psr
+vendor/sebastian
+vendor/symfony
+vendor/twig
+vendor/autoload.php
 
 # Build
 /build

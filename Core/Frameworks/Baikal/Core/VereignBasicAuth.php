@@ -11,21 +11,12 @@ namespace Baikal\Core;
  * @author Lukasz Janyst <ljanyst@buggybrain.net>
  * @license http://code.google.com/p/sabredav/wiki/License Modified BSD License
  */
-class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
+class VereignBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
 
     /**
-     * Reference to PDO connection
-     *
-     * @var PDO
+     * Vereign endpoint URL
      */
-    protected $pdo;
-
-    /**
-     * PDO table name we'll be using
-     *
-     * @var string
-     */
-    protected $tableName;
+    protected $url;     
 
     /**
      * Authentication realm
@@ -39,13 +30,11 @@ class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
      *
      * If the filename argument is passed in, it will parse out the specified file fist.
      *
-     * @param PDO $pdo
-     * @param string $tableName The PDO table name to use
+     * @param string $authRealm: The Realm for authentication
      */
-    function __construct(\PDO $pdo, $authRealm, $tableName = 'users') {
+    function __construct(string $url, $authRealm) {
 
-        $this->pdo = $pdo;
-        $this->tableName = $tableName;
+        $this->url = $url;
         $this->authRealm = $authRealm;
     }
 
@@ -62,12 +51,11 @@ class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
     function validateUserPass($username, $password) {
 
         //error_log("Inside validateUserPass");
-        /*
         try {
-            $url = "http://localhost:8081/validateUserPass";
+            //$url = "http://localhost:8081/validateUserPass";
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_URL, $this->url);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
             curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
@@ -91,22 +79,6 @@ class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
                 $e->getCode(), $e->getMessage()),
                 E_USER_ERROR);
         }
-        */
-
-        $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM ' . $this->tableName . ' WHERE username = ?');
-        $stmt->execute([$username]);
-        $result = $stmt->fetchAll();
-
-
-        if (!count($result)) return false;
-
-        $hash = md5($username . ':' . $this->authRealm . ':' . $password);
-        if ($result[0]['digesta1'] === $hash)
-        {
-            $this->currentUser = $username;
-            return true;
-        }
-        return false;
     }
 
 }

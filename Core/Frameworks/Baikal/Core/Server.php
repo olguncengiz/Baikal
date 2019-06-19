@@ -130,24 +130,25 @@ class Server {
      * @return void
      */
     protected function initServer() {
+        //error_log("Inside Server/initServer");
 
         if ($this->authType === 'Basic') {
-            $authBackend = new \Baikal\Core\PDOBasicAuth($this->pdo, $this->authRealm);
+            $authBackend = new \Baikal\Core\VereignBasicAuth("http://localhost:8081/validateUserPass", $this->authRealm);
         } else {
-            $authBackend = new \Sabre\DAV\Auth\Backend\PDO($this->pdo);
-            $authBackend->setRealm($this->authRealm);
+            //$authBackend = new \Sabre\DAV\Auth\Backend\PDO($this->pdo);
+            //$authBackend->setRealm($this->authRealm);
         }
-        $principalBackend = new \Sabre\DAVACL\PrincipalBackend\PDO($this->pdo);
+        $principalBackend = new \Sabre\DAVACL\PrincipalBackend\VereignPrincipalBackend("http://localhost:8081");
 
         $nodes = [
             new \Sabre\CalDAV\Principal\Collection($principalBackend)
         ];
-        if ($this->enableCalDAV) {
+        /*if ($this->enableCalDAV) {
             $calendarBackend = new \Sabre\CalDAV\Backend\PDO($this->pdo);
             $nodes[] = new \Sabre\CalDAV\CalendarRoot($principalBackend, $calendarBackend);
-        }
+        }*/
         if ($this->enableCardDAV) {
-            $carddavBackend = new \Sabre\CardDAV\Backend\PDO($this->pdo);
+            $carddavBackend = new \Sabre\CardDAV\Backend\VereignBackend("http://localhost:8081");
             $nodes[] = new \Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend);
         }
 
@@ -165,11 +166,11 @@ class Server {
         // WebDAV-Sync!
         $this->server->addPlugin(new \Sabre\DAV\Sync\Plugin());
 
-        if ($this->enableCalDAV) {
+        /*if ($this->enableCalDAV) {
             $this->server->addPlugin(new \Sabre\CalDAV\Plugin());
             $this->server->addPlugin(new \Sabre\CalDAV\ICSExportPlugin());
             $this->server->addPlugin(new \Sabre\CalDAV\Schedule\Plugin());
-        }
+        }*/
         if ($this->enableCardDAV) {
             $this->server->addPlugin(new \Sabre\CardDAV\Plugin());
             $this->server->addPlugin(new \Sabre\CardDAV\VCFExportPlugin());

@@ -705,6 +705,7 @@ class CorePlugin extends ServerPlugin {
      */
     function httpReport(RequestInterface $request, ResponseInterface $response) {
 
+        error_log("httpReport");
         $path = $request->getPath();
 
         $result = $this->server->xml->parse(

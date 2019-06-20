@@ -52,10 +52,10 @@ class VereignBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
 
         //error_log("Inside validateUserPass");
         try {
-            //$url = "http://localhost:8081/validateUserPass";
+            $url = $this->url . "/validateUserPass";
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $this->url);
+            curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
             curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
@@ -66,10 +66,14 @@ class VereignBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
             $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);   //get status code
             curl_close($ch);
             if ($status_code === 200) {
+                $_SESSION['USERNAME'] = $username;
+                $_SESSION['PASSWORD'] = $password;
                 return true;
             }
             else
             {
+                $_SESSION['USERNAME'] = '';
+                $_SESSION['PASSWORD'] = '';
                 return false;
             }
         } catch(Exception $e) {

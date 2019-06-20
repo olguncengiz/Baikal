@@ -133,7 +133,7 @@ class Server {
         //error_log("Inside Server/initServer");
 
         if ($this->authType === 'Basic') {
-            $authBackend = new \Baikal\Core\VereignBasicAuth("http://localhost:8081/validateUserPass", $this->authRealm);
+            $authBackend = new \Baikal\Core\VereignBasicAuth("http://localhost:8081", $this->authRealm);
         } else {
             //$authBackend = new \Sabre\DAV\Auth\Backend\PDO($this->pdo);
             //$authBackend->setRealm($this->authRealm);

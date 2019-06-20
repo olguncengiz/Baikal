@@ -100,7 +100,8 @@ class VereignBackend extends AbstractBackend {
      * @return void
      */
     function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
-        //error_log("updateAddressBook", 0);
+
+        error_log("updateAddressBook", 0);
 
         /*$supportedProperties = [
             '{DAV:}displayname',
@@ -234,6 +235,59 @@ class VereignBackend extends AbstractBackend {
     function getCards($addressbookId) {
         error_log("getCards", 0);
 
+        $result = [];
+        $url = $this->url . "/listContacts";
+        $username = $_SESSION['USERNAME'];
+        $password = $_SESSION['PASSWORD'];
+        
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+            curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+            
+            //curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $output = curl_exec($ch);
+            $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);   //get status code
+            // Check the return value of curl_exec(), too
+            if ($output === false) {
+                error_log("Status:" . $status_code, 0);
+                error_log(curl_error($ch), curl_errno($ch));
+            }
+            error_log("Output:" . json_encode($output), 0);
+            if($output)
+            {
+                $obj = json_decode($output);
+                $uris = $obj->{'data'};
+
+                $i = 1;
+                foreach($uris as $uri)
+                {
+                    $row = [];
+                    $row = ['id' => $i, 'uri' => $uri, 'etag' => '"' . md5($uri) . '"', 'size' => 1, 'lastmodified' => 1560721157];
+                    $i = $i + 1;
+                    $result[] = $row;
+                }
+                
+            }
+
+            // close curl resource, and free up system resources  
+            curl_close($ch);
+        } catch(Exception $e) {
+        
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR);
+        }
+
+        error_log("getCards Result: " . json_encode($result));
+        return $result;
+        
+        //------------------------------
+
         /*
         $stmt = $this->pdo->prepare('SELECT id, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
         $stmt->execute([$addressbookId]);
@@ -248,11 +302,12 @@ class VereignBackend extends AbstractBackend {
                 
         return $result;
         */
-        $result = [];
-        $result[] = ['id' => 1, 'addressbookid' => 1, 'carddata' => 'BEGIN:VCARD\\r\\nVERSION:3.0\\r\\nEMAIL:bursa222@vereign.cucumbermail.net\\r\\nFN:Bursa Bursa\\r\\nUID:24114c69-e047-476d-a157-6ad6f7032345\\r\\nEND:VCARD\\r\\n', 'uri' => 'cda18a1d64a39b1555732f7cec19057ece1185d8.vcf', 'etag' => '"f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
+        /*$result = [];
+        $result[] = ['id' => 1, 'addressbookid' => 1, 'carddata' => 'BEGIN:VCARD\\r\\nVERSION:3.0\\r\\nEMAIL:bursa2322@vereign.cucumbermail.net\\r\\nFN:Bursa Bursa\\r\\nUID:24114c69-e047-476d-a157-6ad6f7032345\\r\\nEND:VCARD\\r\\n', 'uri' => 'cda18a1d64a39b1555732f7cec19057ece1185d8.vcf', 'etag' => '"f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
         error_log("result: " . json_encode($result));
         return $result;
         //return [];
+        */
 
     }
 
@@ -308,17 +363,24 @@ class VereignBackend extends AbstractBackend {
 
         error_log("getMultipleCards", 0);
         error_log("uris:" . json_encode($uris));
+
+        error_log("test");
         
+        //$uids = ["39dbe2b5-e11f-4555-8338-1e35bb50acd0", "e81621a3-7b30-4b9b-a653-9f195a44b455"];
         $result = [];
+        $i = 1;
         foreach ($uris as $uri) {
             //error_log("uri:" . $uri, 0);
             $row = [];
-            $row = ['id' => 1, 'addressbookid' => 1, 'uri' => 'cda18a1d64a39b1555732f7cec19057ece1185d8.vcf', 'etag' => '"f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
+            $row = ['id' => $i, 'addressbookid' => 1, 'uri' => $uri, 'etag' => '"' . $i . 'f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
+            $i = $i + 1;
 
-            $uid = "24114c69-e047-476d-a157-6ad6f7032345";
-            $url = "http://localhost:8081/" . $uid;
-            $username = '23AJjs';
-            $password = '955720';
+            $url = $this->url . "/getContact/" . $uri;
+            error_log("URL: " . $url);
+            //error_log("Session User: " . $_SESSION['USERNAME']);
+            //error_log("Session Pass: " . $_SESSION['PASSWORD']);
+            $username = $_SESSION['USERNAME'];
+            $password = $_SESSION['PASSWORD'];
             
             try {
                 $ch = curl_init();
@@ -337,7 +399,7 @@ class VereignBackend extends AbstractBackend {
                     error_log(curl_error($ch), curl_errno($ch));
                 }
                 error_log("Output:" . json_encode($output), 0);
-                if($output) 
+                if($output)
                 {
                     $row['carddata'] = $output;
                 }
@@ -354,7 +416,7 @@ class VereignBackend extends AbstractBackend {
             
             //$row['etag'] = '"123"';
 
-            //error_log("ROW New:" . json_encode($row), 0);
+            error_log("ROW New:" . json_encode($row), 0);
             $result[] = $row;
         }
         return $result;

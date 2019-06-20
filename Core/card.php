@@ -55,11 +55,14 @@ if (!defined("BAIKAL_CARD_ENABLED") || BAIKAL_CARD_ENABLED !== true) {
     throw new ErrorException("Baikal CardDAV is disabled.", 0, 255, __FILE__, __LINE__);
 }
 
+error_log("Vereign URL:" . VEREIGN_CARDDAV_URL);
+
 $server = new \Baikal\Core\Server(
     BAIKAL_CAL_ENABLED,
     BAIKAL_CARD_ENABLED,
     BAIKAL_DAV_AUTH_TYPE,
     BAIKAL_AUTH_REALM,
+    VEREIGN_CARDDAV_URL,
     $GLOBALS['DB']->getPDO(),
     BAIKAL_CARD_BASEURI
 );

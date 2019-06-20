@@ -60,6 +60,7 @@ $server = new \Baikal\Core\Server(
     BAIKAL_CARD_ENABLED,
     BAIKAL_DAV_AUTH_TYPE,
     BAIKAL_AUTH_REALM,
+    VEREIGN_CARDDAV_URL,
     $GLOBALS['DB']->getPDO(),
     BAIKAL_CARD_BASEURI
 );

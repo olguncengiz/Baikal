@@ -69,6 +69,13 @@ class Server {
     protected $authRealm;
 
     /**
+     * Vereign URL
+     *
+     * @var string
+     */
+    protected $vereign_url;
+
+    /**
      * Reference to Database object
      *
      * @var PDO
@@ -97,15 +104,17 @@ class Server {
      * @param bool $enableCardDAV
      * @param string $authType
      * @param string $authRealm
+     * @param string $vereign_url
      * @param PDO $pdo
      * @param string $baseUri
      */
-    function __construct($enableCalDAV, $enableCardDAV, $authType, $authRealm, PDO $pdo, $baseUri) {
+    function __construct($enableCalDAV, $enableCardDAV, $authType, $authRealm, $vereign_url, PDO $pdo, $baseUri) {
 
         $this->enableCalDAV = $enableCalDAV;
         $this->enableCardDAV = $enableCardDAV;
         $this->authType = $authType;
         $this->authRealm = $authRealm;
+        $this->vereign_url = $vereign_url;
         $this->pdo = $pdo;
         $this->baseUri = $baseUri;
 
@@ -132,12 +141,12 @@ class Server {
     protected function initServer() {
 
         if ($this->authType === 'Basic') {
-            $authBackend = new \Baikal\Core\VereignBasicAuth("http://localhost:8081", $this->authRealm);
+            $authBackend = new \Baikal\Core\VereignBasicAuth($this->vereign_url, $this->authRealm);
         } else {
             $authBackend = new \Sabre\DAV\Auth\Backend\PDO($this->pdo);
             $authBackend->setRealm($this->authRealm);
         }
-        $principalBackend = new \Sabre\DAVACL\PrincipalBackend\VereignPrincipalBackend("http://localhost:8081");
+        $principalBackend = new \Sabre\DAVACL\PrincipalBackend\VereignPrincipalBackend($this->vereign_url);
 
         $nodes = [
             new \Sabre\CalDAV\Principal\Collection($principalBackend)
@@ -147,7 +156,7 @@ class Server {
             $nodes[] = new \Sabre\CalDAV\CalendarRoot($principalBackend, $calendarBackend);
         }
         if ($this->enableCardDAV) {
-            $carddavBackend = new \Sabre\CardDAV\Backend\VereignBackend("http://localhost:8081");
+            $carddavBackend = new \Sabre\CardDAV\Backend\VereignBackend($this->vereign_url);
             $nodes[] = new \Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend);
         }
 

@@ -46,6 +46,10 @@ class Standard extends \Baikal\Model\Config {
             "type"    => "string",
             "comment" => "HTTP authentication type for WebDAV; default Digest"
         ],
+        "VEREIGN_CARDDAV_URL" => [
+            "type"    => "string",
+            "comment" => "Vereign URL"
+        ],
         "BAIKAL_ADMIN_PASSWORDHASH" => [
             "type"    => "string",
             "comment" => "Baïkal Web admin password hash; Set via Baïkal Web Admin",
@@ -58,6 +62,7 @@ class Standard extends \Baikal\Model\Config {
         "BAIKAL_CARD_ENABLED"       => true,
         "BAIKAL_CAL_ENABLED"        => true,
         "BAIKAL_DAV_AUTH_TYPE"      => "Digest",
+        "VEREIGN_CARDDAV_URL"       => "http://localhost:8081",
         "BAIKAL_ADMIN_PASSWORDHASH" => ""
     ];
 
@@ -86,6 +91,11 @@ class Standard extends \Baikal\Model\Config {
             "prop"    => "BAIKAL_DAV_AUTH_TYPE",
             "label"   => "WebDAV authentication type",
             "options" => ["Digest", "Basic"]
+        ]));
+
+        $oMorpho->add(new \Formal\Element\Text([
+            "prop"    => "VEREIGN_CARDDAV_URL",
+            "label"   => "Vereign URL"
         ]));
 
         $oMorpho->add(new \Formal\Element\Password([
@@ -167,6 +177,9 @@ class Standard extends \Baikal\Model\Config {
 # Required configuration
 # You *have* to review these settings for Baïkal to run properly
 #
+
+# Vereign carddav-agent URL
+define("VEREIGN_CARDDAV_URL", "http://localhost:8081");
 
 # Timezone of your users, if unsure, check http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 define("PROJECT_TIMEZONE", "Europe/Paris");

@@ -38,12 +38,8 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      */
     function __construct(Backend\BackendInterface $carddavBackend, array $addressBookInfo) {
 
-        //error_log("Inside new AddressBook");
-        //error_log("carddavBackend: " . json_encode($carddavBackend));
-        //error_log("addressBookInfo: " . json_encode($addressBookInfo));
         $this->carddavBackend = $carddavBackend;
         $this->addressBookInfo = $addressBookInfo;
-        //error_log("AddressBook name: " . $this->getName(), 0);
 
     }
 
@@ -67,7 +63,6 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
     function getChild($name) {
 
         $obj = $this->carddavBackend->getCard($this->addressBookInfo['id'], $name);
-        //error_log("getChild obj: " . json_encode($obj));
         if (!$obj) throw new DAV\Exception\NotFound('Card not found');
         return new Card($this->carddavBackend, $this->addressBookInfo, $obj);
 

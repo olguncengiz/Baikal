@@ -128,13 +128,8 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      * @return \AddressBook
      */
     function getChild($name) {
-        //error_log("Inside getChild", 0);
 
         foreach ($this->getChildren() as $child) {
-            //error_log("child: " . json_encode($child), 0);
-            
-            //error_log("name: " . $name);
-            //error_log("child name: " . $child->getName());
             if ($name == $child->getName())
                 return $child;
 
@@ -149,16 +144,12 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      * @return array
      */
     function getChildren() {
-        //error_log("Inside getChildren", 0);
+
         $addressbooks = $this->carddavBackend->getAddressBooksForUser($this->principalUri);
-        //error_log("addressBooks " . json_encode($addressbooks), 0);
-        //error_log("Count: " . count($addressbooks));
         $objs = [];
         foreach ($addressbooks as $addressbook) {
-            //error_log("addressBook " . json_encode($addressbook), 0);
             $objs[] = new AddressBook($this->carddavBackend, $addressbook);
         }
-        //error_log("objs " . json_encode($objs), 0);
         return $objs;
 
     }

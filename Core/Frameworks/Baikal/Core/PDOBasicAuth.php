@@ -61,38 +61,6 @@ class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
      */
     function validateUserPass($username, $password) {
 
-        //error_log("Inside validateUserPass");
-        /*
-        try {
-            $url = "http://localhost:8081/validateUserPass";
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-            curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
-            
-            //curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            $output = curl_exec($ch);
-            $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);   //get status code
-            curl_close($ch);
-            if ($status_code === 200) {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        } catch(Exception $e) {
-        
-            trigger_error(sprintf(
-                'Curl failed with error #%d: %s',
-                $e->getCode(), $e->getMessage()),
-                E_USER_ERROR);
-        }
-        */
-
         $stmt = $this->pdo->prepare('SELECT username, digesta1 FROM ' . $this->tableName . ' WHERE username = ?');
         $stmt->execute([$username]);
         $result = $stmt->fetchAll();
@@ -107,6 +75,7 @@ class PDOBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
             return true;
         }
         return false;
+
     }
 
 }

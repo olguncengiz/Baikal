@@ -137,11 +137,10 @@ class Plugin extends DAV\ServerPlugin {
      * @return void
      */
     function propFindEarly(DAV\PropFind $propFind, DAV\INode $node) {
-        error_log("Inside propFindEarly");
+
         $ns = '{' . self::NS_CARDDAV . '}';
 
         if ($node instanceof IAddressBook) {
-            error_log("node: IAddressBook");
 
             $propFind->handle($ns . 'max-resource-size', $this->maxResourceSize);
             $propFind->handle($ns . 'supported-address-data', function() {
@@ -153,7 +152,6 @@ class Plugin extends DAV\ServerPlugin {
 
         }
         if ($node instanceof DAVACL\IPrincipal) {
-            error_log("node: IPrincipal");
 
             $path = $propFind->getPath();
 
@@ -168,16 +166,12 @@ class Plugin extends DAV\ServerPlugin {
         }
 
         if ($node instanceof ICard) {
-            error_log("node: ICard");        
-            error_log("node: " . json_encode($node));
 
             // The address-data property is not supposed to be a 'real'
             // property, but in large chunks of the spec it does act as such.
             // Therefore we simply expose it as a property.
             $propFind->handle('{' . self::NS_CARDDAV . '}address-data', function() use ($node) {
-                error_log("--- handle");
                 $val = $node->get();
-                error_log("--- var:" . json_encode($val));
                 if (is_resource($val))
                     $val = stream_get_contents($val);
 
@@ -198,7 +192,6 @@ class Plugin extends DAV\ServerPlugin {
      * @return bool
      */
     function report($reportName, $dom, $path) {
-        error_log("report name:" . $reportName);
 
         switch ($reportName) {
             case '{' . self::NS_CARDDAV . '}addressbook-multiget' :
@@ -242,7 +235,6 @@ class Plugin extends DAV\ServerPlugin {
      */
     function addressbookMultiGetReport($report) {
 
-        error_log("Inside addressbookMultiGetReport");
         $contentType = $report->contentType;
         $version = $report->version;
         if ($version) {
@@ -396,7 +388,6 @@ class Plugin extends DAV\ServerPlugin {
      * @return void
      */
     protected function addressbookQueryReport($report) {
-        error_log("XX addressbookQueryReport");
 
         $depth = $this->server->getHTTPDepth(0);
 
@@ -685,14 +676,12 @@ class Plugin extends DAV\ServerPlugin {
      * @return void
      */
     function propFindLate(DAV\PropFind $propFind, DAV\INode $node) {
-        error_log("Inside propFindLate");
 
         // If the request was made using the SOGO connector, we must rewrite
         // the content-type property. By default SabreDAV will send back
         // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
         // part.
         if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'Thunderbird') === false) {
-            error_log("YES");
             return;
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
@@ -700,7 +689,6 @@ class Plugin extends DAV\ServerPlugin {
         if ($part === 'text/x-vcard' || $part === 'text/vcard') {
             $propFind->set('{DAV:}getcontenttype', 'text/x-vcard');
         }
-        error_log("Exiting propFindLate");
 
     }
 

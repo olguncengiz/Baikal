@@ -326,25 +326,50 @@ class VereignBackend extends AbstractBackend {
     function getCard($addressBookId, $cardUri) {
         error_log("Inside getCard Vereign", 0);
 
-        /*
-        $stmt = $this->pdo->prepare('SELECT id, carddata, uri, lastmodified, etag, size FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ? LIMIT 1');
-        $stmt->execute([$addressBookId, $cardUri]);
+        $row = [];
+        $row = ['id' => 1, 'addressbookid' => $addressBookId, 'uri' => $cardUri, 'etag' => '"' . 'f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
 
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        error_log("getCard", 0);
-        error_log("RESULT:" . json_encode($result), 0);
+        $url = $this->url . "/getContact/" . $cardUri;
+        error_log("URL: " . $url);
+        //error_log("Session User: " . $_SESSION['USERNAME']);
+        //error_log("Session Pass: " . $_SESSION['PASSWORD']);
+        $username = $_SESSION['USERNAME'];
+        $password = $_SESSION['PASSWORD'];
+        
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30); //timeout after 30 seconds
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+            curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+            
+            //curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $output = curl_exec($ch);
+            $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);   //get status code
+            // Check the return value of curl_exec(), too
+            if ($output === false) {
+                error_log("Status:" . $status_code, 0);
+                error_log(curl_error($ch), curl_errno($ch));
+            }
+            error_log("Output:" . json_encode($output), 0);
+            if($output)
+            {
+                $row['carddata'] = $output;
+            }
 
-        if (!$result) return false;
+            // close curl resource, and free up system resources  
+            curl_close($ch);
+        } catch(Exception $e) {
+        
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR);
+        }
 
-        $result['etag'] = '"' . $result['etag'] . '"';
-        return $result;
-        */
-        $result = [];
-        $result[] = ['id' => 1, 'addressbookid' => 1, 'carddata' => 'BEGIN:VCARD\\r\\nVERSION:3.0\\r\\nEMAIL:bursa222@vereign.cucumbermail.net\\r\\nFN:Bursa Bursa\\r\\nUID:24114c69-e047-476d-a157-6ad6f7032345\\r\\nEND:VCARD\\r\\n', 'uri' => 'cda18a1d64a39b1555732f7cec19057ece1185d8.vcf', 'etag' => '"f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
-        error_log("result: " . json_encode($result));
-        return $result;
-        //return false;
-
+        error_log("ROW New:" . json_encode($row), 0);
+        return $row;
     }
 
     /**

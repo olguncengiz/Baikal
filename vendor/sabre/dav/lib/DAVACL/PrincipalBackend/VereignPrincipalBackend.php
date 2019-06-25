@@ -89,8 +89,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return array
      */
     function getPrincipalsByPrefix($prefixPath) {
-        error_log("getPrincipalsByPrefix", 0);
-
         /*
         $fields = [
             'uri',
@@ -136,8 +134,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return array
      */
     function getPrincipalByPath($path) {
-        //error_log("getPrincipalByPath", 0);
-        //error_log("path:". $path, 0);
 
         $fields = [
             'id',
@@ -184,7 +180,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @param DAV\PropPatch $propPatch
      */
     function updatePrincipal($path, DAV\PropPatch $propPatch) {
-        error_log("updatePrincipal", 0);
 
         /*
         $propPatch->handle(array_keys($this->fieldMap), function($properties) use ($path) {
@@ -252,7 +247,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      */
     function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof') {
         if (count($searchProperties) == 0) return [];    //No criteria
-        error_log("searchPrincipals", 0);
         /*
 
         $query = 'SELECT uri FROM ' . $this->tableName . ' WHERE ';
@@ -312,7 +306,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return string
      */
     function findByUri($uri, $principalPrefix) {
-        error_log("findByUri", 0);
         /*
         $value = null;
         $scheme = null;
@@ -351,7 +344,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return array
      */
     function getGroupMemberSet($principal) {
-        error_log("getGroupMemberSet", 0);
 
         /*
         $principal = $this->getPrincipalByPath($principal);
@@ -377,7 +369,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return array
      */
     function getGroupMembership($principal) {
-        //error_log("getGroupMembership", 0);
 
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) throw new DAV\Exception('Principal not found');
@@ -406,7 +397,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return void
      */
     function setGroupMemberSet($principal, array $members) {
-        error_log("setGroupMemberSet", 0);
 
         /*
         // Grabbing the list of principal id's.
@@ -451,7 +441,6 @@ class VereignPrincipalBackend extends AbstractBackend implements CreatePrincipal
      * @return void
      */
     function createPrincipal($path, MkCol $mkCol) {
-        error_log("createPrincipal", 0);
 
         /*
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->tableName . ' (uri) VALUES (?)');

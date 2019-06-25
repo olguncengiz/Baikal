@@ -190,7 +190,7 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      * @return void
      */
     function propPatch(DAV\PropPatch $propPatch) {
-
+        
         return $this->carddavBackend->updateAddressBook($this->addressBookInfo['id'], $propPatch);
 
     }
@@ -219,7 +219,8 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
 
         }
 
-        return $response;
+        //return $response;
+        return [];
 
     }
 

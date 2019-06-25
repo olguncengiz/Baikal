@@ -59,7 +59,6 @@ class VereignBackend extends AbstractBackend {
      * @return array
      */
     function getAddressBooksForUser($principalUri) {
-        //error_log("getAddressBooksForUser", 0);
 
         /*
         $stmt = $this->pdo->prepare('SELECT id, uri, displayname, principaluri, description, synctoken FROM ' . $this->addressBooksTableName . ' WHERE principaluri = ?');
@@ -100,8 +99,6 @@ class VereignBackend extends AbstractBackend {
      * @return void
      */
     function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch) {
-
-        error_log("updateAddressBook", 0);
 
         /*$supportedProperties = [
             '{DAV:}displayname',
@@ -157,7 +154,6 @@ class VereignBackend extends AbstractBackend {
      * @return int Last insert id
      */
     function createAddressBook($principalUri, $url, array $properties) {
-        //error_log("createAddressBook", 0);
 
         /*
         $values = [
@@ -198,7 +194,6 @@ class VereignBackend extends AbstractBackend {
      * @return void
      */
     function deleteAddressBook($addressBookId) {
-        error_log("deleteAddressBook", 0);
 
         /*
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ?');
@@ -233,7 +228,6 @@ class VereignBackend extends AbstractBackend {
      * @return array
      */
     function getCards($addressbookId) {
-        error_log("getCards", 0);
 
         $result = [];
         $url = $this->url . "/listContacts";
@@ -256,7 +250,6 @@ class VereignBackend extends AbstractBackend {
                 error_log("Status:" . $status_code, 0);
                 error_log(curl_error($ch), curl_errno($ch));
             }
-            error_log("Output:" . json_encode($output), 0);
             if($output)
             {
                 $obj = json_decode($output);
@@ -283,7 +276,6 @@ class VereignBackend extends AbstractBackend {
                 E_USER_ERROR);
         }
 
-        error_log("getCards Result: " . json_encode($result));
         return $result;
         
         //------------------------------
@@ -293,9 +285,7 @@ class VereignBackend extends AbstractBackend {
         $stmt->execute([$addressbookId]);
 
         $result = [];
-        error_log("getCards", 0);
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            error_log("ROW:" . json_encode($row), 0);
             $row['etag'] = '"' . $row['etag'] . '"';
             $result[] = $row;
         }
@@ -304,7 +294,6 @@ class VereignBackend extends AbstractBackend {
         */
         /*$result = [];
         $result[] = ['id' => 1, 'addressbookid' => 1, 'carddata' => 'BEGIN:VCARD\\r\\nVERSION:3.0\\r\\nEMAIL:bursa2322@vereign.cucumbermail.net\\r\\nFN:Bursa Bursa\\r\\nUID:24114c69-e047-476d-a157-6ad6f7032345\\r\\nEND:VCARD\\r\\n', 'uri' => 'cda18a1d64a39b1555732f7cec19057ece1185d8.vcf', 'etag' => '"f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
-        error_log("result: " . json_encode($result));
         return $result;
         //return [];
         */
@@ -324,15 +313,11 @@ class VereignBackend extends AbstractBackend {
      * @return array
      */
     function getCard($addressBookId, $cardUri) {
-        error_log("Inside getCard Vereign", 0);
 
         $row = [];
         $row = ['id' => 1, 'addressbookid' => $addressBookId, 'uri' => $cardUri, 'etag' => '"' . 'f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
 
         $url = $this->url . "/getContact/" . $cardUri;
-        error_log("URL: " . $url);
-        //error_log("Session User: " . $_SESSION['USERNAME']);
-        //error_log("Session Pass: " . $_SESSION['PASSWORD']);
         $username = $_SESSION['USERNAME'];
         $password = $_SESSION['PASSWORD'];
         
@@ -352,7 +337,6 @@ class VereignBackend extends AbstractBackend {
                 error_log("Status:" . $status_code, 0);
                 error_log(curl_error($ch), curl_errno($ch));
             }
-            error_log("Output:" . json_encode($output), 0);
             if($output)
             {
                 $row['carddata'] = $output;
@@ -368,7 +352,6 @@ class VereignBackend extends AbstractBackend {
                 E_USER_ERROR);
         }
 
-        error_log("ROW New:" . json_encode($row), 0);
         return $row;
     }
 
@@ -385,25 +368,16 @@ class VereignBackend extends AbstractBackend {
      * @return array
      */
     function getMultipleCards($addressBookId, array $uris) {
-
-        error_log("getMultipleCards", 0);
-        error_log("uris:" . json_encode($uris));
-
-        error_log("test");
         
         //$uids = ["39dbe2b5-e11f-4555-8338-1e35bb50acd0", "e81621a3-7b30-4b9b-a653-9f195a44b455"];
         $result = [];
         $i = 1;
         foreach ($uris as $uri) {
-            //error_log("uri:" . $uri, 0);
             $row = [];
             $row = ['id' => $i, 'addressbookid' => 1, 'uri' => $uri, 'etag' => '"' . $i . 'f01f71b01d576eadb3cc846cea3daaf7"', 'size' => 224, 'lastmodified' => 1560721157];
             $i = $i + 1;
 
             $url = $this->url . "/getContact/" . $uri;
-            error_log("URL: " . $url);
-            //error_log("Session User: " . $_SESSION['USERNAME']);
-            //error_log("Session Pass: " . $_SESSION['PASSWORD']);
             $username = $_SESSION['USERNAME'];
             $password = $_SESSION['PASSWORD'];
             
@@ -423,7 +397,6 @@ class VereignBackend extends AbstractBackend {
                     error_log("Status:" . $status_code, 0);
                     error_log(curl_error($ch), curl_errno($ch));
                 }
-                error_log("Output:" . json_encode($output), 0);
                 if($output)
                 {
                     $row['carddata'] = $output;
@@ -438,10 +411,7 @@ class VereignBackend extends AbstractBackend {
                     $e->getCode(), $e->getMessage()),
                     E_USER_ERROR);
             }
-            
-            //$row['etag'] = '"123"';
 
-            error_log("ROW New:" . json_encode($row), 0);
             $result[] = $row;
         }
         return $result;
@@ -475,7 +445,6 @@ class VereignBackend extends AbstractBackend {
      * @return string|null
      */
     function createCard($addressBookId, $cardUri, $cardData) {
-        error_log("createCard", 0);
 
         /*
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->cardsTableName . ' (carddata, uri, lastmodified, addressbookid, size, etag) VALUES (?, ?, ?, ?, ?, ?)');
@@ -525,7 +494,6 @@ class VereignBackend extends AbstractBackend {
      * @return string|null
      */
     function updateCard($addressBookId, $cardUri, $cardData) {
-        error_log("updateCard", 0);
         /*
         $stmt = $this->pdo->prepare('UPDATE ' . $this->cardsTableName . ' SET carddata = ?, lastmodified = ?, size = ?, etag = ? WHERE uri = ? AND addressbookid =?');
 
@@ -555,7 +523,6 @@ class VereignBackend extends AbstractBackend {
      * @return bool
      */
     function deleteCard($addressBookId, $cardUri) {
-        error_log("deleteCard", 0);
 
         /*
         $stmt = $this->pdo->prepare('DELETE FROM ' . $this->cardsTableName . ' WHERE addressbookid = ? AND uri = ?');
@@ -625,7 +592,6 @@ class VereignBackend extends AbstractBackend {
      * @return array
      */
     function getChangesForAddressBook($addressBookId, $syncToken, $syncLevel, $limit = null) {
-        error_log("getChangesForAddressBook", 0);
 
         /*
         // Current synctoken
@@ -699,7 +665,6 @@ class VereignBackend extends AbstractBackend {
      * @return void
      */
     protected function addChange($addressBookId, $objectUri, $operation) {
-        error_log("addChange", 0);
         /*
         $stmt = $this->pdo->prepare('INSERT INTO ' . $this->addressBookChangesTableName . ' (uri, synctoken, addressbookid, operation) SELECT ?, synctoken, ?, ? FROM ' . $this->addressBooksTableName . ' WHERE id = ?');
         $stmt->execute([

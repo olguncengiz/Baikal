@@ -50,7 +50,6 @@ class VereignBasicAuth extends \Sabre\DAV\Auth\Backend\AbstractBasic {
      */
     function validateUserPass($username, $password) {
 
-        //error_log("Inside validateUserPass");
         try {
             $url = $this->url . "/validateUserPass";
 
